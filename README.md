@@ -1,4 +1,4 @@
-LetsReWise — AI Quiz Generation & Study Copilot
+#LetsReWise — AI Quiz Generation & Study Copilot#
 
 (Next.js • Clerk • Supabase • OpenAI • Stripe)
 
