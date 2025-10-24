@@ -1,19 +1,19 @@
-#LetsReWise — AI Quiz Generation & Study Copilot#
+# LetsReWise — AI Quiz Generation & Study Copilot
 
 (Next.js • Clerk • Supabase • OpenAI • Stripe)
 
 A minimal, fast, and reliable AI study copilot. Upload study materials, generate high-quality quizzes, and practice—without bloat.
 
-✨ Why LetsReWise?
+# ✨ Why LetsReWise?
 
 Most “AI study” tools fall into two traps:
 	1.	Bloat & distraction — many features, none delightful
 	2.	Flaky results — hallucinations, slow UX, no trust
 
-LetsReWise focuses on one promise:
+# LetsReWise focuses on one promise:
 Turn your documents into trusted quizzes you can practice—quickly.
 
-Product Principles
+# Product Principles
 	•	Minimalism — fewer screens, fewer clicks, faster flow
 	•	Determinism — same input → same quiz (hashing, consistent chunking)
 	•	Ownership — strict RLS; your content stays yours
@@ -21,7 +21,7 @@ Product Principles
 
 ⸻
 
-✅ What’s implemented (today)
+# ✅ What’s implemented (today)
 	•	Auth & Protection — Clerk on Next.js App Router with modern middleware
 	•	Onboarding — two-column, clean light UI (black accents)
 	•	Geo Autocomplete — /api/geodb
@@ -34,7 +34,7 @@ This is the secure, reliable foundation for the AI quiz engine.
 
 ⸻
 
-🧭 Roadmap
+# 🧭 Roadmap
 
 Phase A — Core Data & Billing
 	•	onboarding_profiles + RLS ✅ (next: persist call)
@@ -63,7 +63,7 @@ Phase F — Deploy & Ops
 
 ⸻
 
-🧩 Architecture
+# 🧩 Architecture
 Next.js (App Router)
 ├─ Auth: Clerk (middleware protects non-public routes)
 ├─ UI: Tailwind (light, minimal, black accents)
@@ -80,7 +80,7 @@ Next.js (App Router)
    └─ pgvector (document_chunks)
    
 
-   🛠 Tech Stack
+   # 🛠 Tech Stack
 	•	Frontend: Next.js 16 (Turbopack), React 19, Tailwind
 	•	Auth: Clerk (email OTP + social; no passwords)
 	•	DB/Storage: Supabase (Postgres, RLS, Storage, pgvector)
@@ -92,7 +92,7 @@ Next.js (App Router)
 
 ⸻
 
-📦 Project Structure
+# 📦 Project Structure
 app/
   api/
     geodb/route.ts         # country/city proxy (local-first + RapidAPI fallback + cache)
@@ -116,55 +116,25 @@ types/
 
 ⸻
 
-🔐 Security & Privacy
+# 🔐 Security & Privacy
 	•	Service-role key is server-only (API routes, server components, jobs)
 	•	RLS on user tables; every query scoped by user_id = auth.uid()
 	•	Minimal PII (name, email, academic context). No cross-tenant leakage
 
 ⸻
 
-🧪 Local Development
-
-1) Prerequisites
-	•	Node 18+
-	•	Supabase project
-	•	Clerk application
-
-2) Environment
-
-Create .env.local (never commit this file):
-# Clerk
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_***
-CLERK_SECRET_KEY=sk_***
-
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJI...
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJI...   # server-only usage
-
-# RapidAPI (GeoDB fallback)
-RAPIDAPI_KEY=xxxxxxxxxxxxxxxx
-
-# OpenAI (quiz generation later)
-OPENAI_API_KEY=sk-********************************
-
-3) Install & Run
-npm install
-npm run dev
-# App on http://localhost:3000 (or next free port)
-
-🌍 Geo Data Strategy
+# 🌍 Geo Data Strategy
 	•	Countries: local countries.json + Fuse.js fuzzy search
 	•	Cities: local cities.json for common cases; if not found, backend falls back to GeoDB (RapidAPI) with a short in-memory cache to reduce cost
 
-Why this approach?
+# Why this approach?
 	•	Low latency for the 95% path
 	•	Resilience when external APIs throttle or fail
 	•	Predictable costs without sacrificing global coverage
 
 ⸻
 
-🧱 Next Up (MVP Backbone)
+# 🧱 Next Up (MVP Backbone)
 	1.	Persist onboarding
 	•	app/api/onboarding/route.ts (POST)
 	•	Supabase onboarding_profiles (SQL + RLS)
@@ -185,7 +155,7 @@ Why this approach?
 
 ⸻
 
-🧾 Design Decisions (and why)
+# 🧾 Design Decisions (and why)
 	•	Clerk over custom auth — faster, secure, passwordless, SSO-ready
 	•	Supabase for Postgres + RLS + Storage + pgvector in one stack
 	•	Local-first geo to stay fast and keep API costs sane
@@ -194,14 +164,14 @@ Why this approach?
 
 ⸻
 
-🧪 Testing
+# 🧪 Testing
 	•	Unit tests (soon) for transforms & quiz schema validation
 	•	API tests (soon) for /api/geodb, /api/onboarding, /api/quizzes
 	•	E2E (soon) via Playwright
 
 ⸻
 
-🧑‍💻 Contributing
+# 🧑‍💻 Contributing
 
 We keep it lean:
 	•	Small PRs with clear scope
@@ -210,13 +180,13 @@ We keep it lean:
 
 ⸻
 
-📄 License
+# 📄 License
 
 Proprietary © LetsReWise. All rights reserved.
 Contact: hello@letsrewise.com
 
 ⸻
 
-Screenshots
+# Screenshots
 
-Add onboarding and dashboard screenshots here once available.
+We will add onboarding and dashboard screenshots here once available.
