@@ -1,153 +1,138 @@
-# LetsReWise — AI Quiz Generation & Study Copilot (Next.js + Clerk + Supabase + OpenAI)
+LetsReWise — AI Quiz Generation & Study Copilot
 
-A minimal, fast, and reliable AI study copilot. Upload study materials, generate high-quality quizzes, and practice with spaced repetition—without bloat or confusion.
+(Next.js • Clerk • Supabase • OpenAI • Stripe)
 
-> Built for students, by builders who care about clarity and speed.
+A minimal, fast, and reliable AI study copilot. Upload study materials, generate high-quality quizzes, and practice—without bloat.
 
----
+✨ Why LetsReWise?
 
-## ✨ Why LetsReWise?
+Most “AI study” tools fall into two traps:
+	1.	Bloat & distraction — many features, none delightful
+	2.	Flaky results — hallucinations, slow UX, no trust
 
-Most “AI study” products fall into two traps:
+LetsReWise focuses on one promise:
+Turn your documents into trusted quizzes you can practice—quickly.
 
-1) **Bloat & distraction** (10 features, none delightful)  
-2) **Flaky results** (hallucinations, slow UX, no trust)
+Product Principles
+	•	Minimalism — fewer screens, fewer clicks, faster flow
+	•	Determinism — same input → same quiz (hashing, consistent chunking)
+	•	Ownership — strict RLS; your content stays yours
+	•	Speed — local-first search, small payloads, smart caching
 
-**LetsReWise** focuses on *one* promise:  
-**Turn your docs into trusted quizzes you can practice—quickly.**
+⸻
 
-### Our Principles
+✅ What’s implemented (today)
+	•	Auth & Protection — Clerk on Next.js App Router with modern middleware
+	•	Onboarding — two-column, clean light UI (black accents)
+	•	Geo Autocomplete — /api/geodb
+	•	Countries: local JSON + Fuse.js fuzzy search
+	•	Cities: local JSON (compact) → fallback RapidAPI (GeoDB) with cache
+	•	Supabase wiring — SSR & browser clients; service-role only on server
+	•	Stable imports — @/… aliases across app/components/data/lib/utils
 
-- **Minimalism** → Fewer screens, fewer clicks, faster flow.  
-- **Determinism** → Same input → same quiz (hash-based caching, chunking policy).  
-- **Ownership** → Your docs are yours; strict RLS, no cross-tenant leakage.  
-- **Speed** → Local-first search where possible, smart caching, small payloads.  
+This is the secure, reliable foundation for the AI quiz engine.
 
----
+⸻
 
-## 🧭 What’s in this repo (today)
+🧭 Roadmap
 
-- **Next.js 16 (App Router)** with **Clerk** auth & route protection
-- **Onboarding**: two-column, clean UI (light theme)
-- **Geo autocomplete**:
-  - `/api/geodb` backend proxy
-  - **Countries**: local JSON + Fuse fuzzy search
-  - **Cities**: local JSON (top set) → fallback to RapidAPI (GeoDB) with in-memory cache
-- **Supabase integration** (SSR + browser clients) with **service-role pattern** (server-only)
-- Strong **file/folder aliasing** (`@/…`) to keep imports stable
-- Production-lean TS config, clean lint/build
+Phase A — Core Data & Billing
+	•	onboarding_profiles + RLS ✅ (next: persist call)
+	•	Plans & subscriptions (Stripe)
+	•	Usage counters & hard limits
 
-> The core foundation for secure, high-confidence product features.
+Phase B — Documents & Vector Search
+	•	Upload → Storage (Supabase)
+	•	Background processing (extract → chunk → embed via pgvector)
+	•	/api/search RAG over user-scoped vectors
 
----
+Phase C — Quiz Engine
+	•	/api/quizzes — generate/store questions from selected docs
+	•	Quiz player UI with autosave & explanations
+	•	Anti-abuse & plan enforcement
 
-## 🚀 Roadmap (high-level)
+Phase D — Admin / Analytics
+	•	Admin panel, logs, feature flags
+	•	Product analytics (PostHog), error tracking (Sentry)
 
-**Phase A — Core Data & Billing**
-- `onboarding_profiles` table + RLS ✅ (next: persistence)
-- Plans & subscriptions (Stripe)
-- Usage counters & hard limits
+Phase E — Security / Perf / Compliance
+	•	CSP & secure headers, PITR backups, status page
 
-**Phase B — Documents & Vector Search**
-- Upload → Storage (Supabase)
-- Background processing (chunking + embeddings w/ pgvector)
-- `/api/search` RAG over user-scoped vectors
+Phase F — Deploy & Ops
+	•	Vercel deploy, health checks, cron for processing, incident playbook
 
-**Phase C — Quiz Engine**
-- `/api/quizzes` — generate questions from selected docs
-- Quiz player UI with autosave + explanations
-- Anti-abuse & plan enforcement
+⸻
 
-**Phase D — Admin / Analytics**
-- Admin panel, logs, feature flags
-- Product analytics (PostHog), error tracking (Sentry)
-
-**Phase E — Security / Perf / Compliance**
-- CSP, secure headers, PITR backups, status page
-
-**Phase F — Deploy & Ops**
-- Vercel deploy, health checks, cron for processing, incident playbook
-
----
-
-## 🧩 Architecture
+🧩 Architecture
 Next.js (App Router)
 ├─ Auth: Clerk (middleware protects non-public routes)
-├─ UI: Tailwind minimal light theme
+├─ UI: Tailwind (light, minimal, black accents)
 ├─ API routes:
-│  ├─ /api/geodb         ← local JSON + RapidAPI fallback (fuzzy)
-│  ├─ /api/onboarding    ← (next) persist profile to Supabase (service role)
-│  ├─ /api/upload        ← (next) presigned Storage URL
-│  ├─ /api/process       ← (next) background text → chunks → embeddings
-│  ├─ /api/quizzes       ← (next) generate/store quizzes
-│  └─ /api/search        ← (next) vector search (pgvector)
+│  ├─ /api/geodb        ← local JSON + RapidAPI fallback (fuzzy)
+│  ├─ /api/onboarding   ← (next) persist profile (server-only service role)
+│  ├─ /api/upload       ← (next) presigned Storage URL
+│  ├─ /api/process      ← (next) background: text → chunks → embeddings
+│  ├─ /api/quizzes      ← (next) generate/store quizzes
+│  └─ /api/search       ← (next) pgvector semantic search
 └─ Supabase
-├─ Postgres + RLS
-├─ Storage (docs/)
-└─ pgvector (document_chunks)
----
+   ├─ Postgres + RLS
+   ├─ Storage (docs/)
+   └─ pgvector (document_chunks)
+   
 
-## 🛠 Tech Stack
+   🛠 Tech Stack
+	•	Frontend: Next.js 16 (Turbopack), React 19, Tailwind
+	•	Auth: Clerk (email OTP + social; no passwords)
+	•	DB/Storage: Supabase (Postgres, RLS, Storage, pgvector)
+	•	AI: OpenAI (embeddings + quiz generation)
+	•	Billing: Stripe (checkout + webhooks)
+	•	Search: Fuse.js (local fuzzy), pgvector (semantic)
+	•	Deploy: Vercel
+	•	Observability: Vercel Logs, PostHog, Sentry (planned)
 
-- **Frontend**: Next.js 16 (Turbopack), React 19, Tailwind
-- **Auth**: Clerk (SSO-ready)
-- **DB/Storage**: Supabase (Postgres, RLS, Storage, pgvector)
-- **AI**: OpenAI (embeddings + quiz generation)
-- **Billing**: Stripe (checkout + webhooks)
-- **Search**: Fuse.js (local fuzzy), pgvector (semantic search)
-- **Deploy**: Vercel
-- **Observability**: Vercel Logs, PostHog, Sentry (planned)
+⸻
 
----
-
-## 📦 Project Structure
+📦 Project Structure
 app/
-api/
-geodb/route.ts          # country/city proxy (local first + RapidAPI fallback)
-onboarding/route.ts     # (next) save profile to Supabase
-onboarding/page.tsx       # two-column onboarding
-dashboard/page.tsx        # (next) landing after onboarding
+  api/
+    geodb/route.ts         # country/city proxy (local-first + RapidAPI fallback + cache)
+    onboarding/route.ts    # (next) save profile to Supabase (server-only)
+  onboarding/page.tsx      # two-column onboarding UI
+  dashboard/page.tsx       # (next) after onboarding
 components/
-GeoSelect.tsx             # reusable autocomplete (fuzzy + async)
+  GeoSelect.tsx            # reusable autocomplete (fuzzy + async + keyboard nav)
 data/
-countries.json            # local country list (normalized)
-cities.json               # local top cities (compact), API fallback beyond
+  countries.json           # all countries (normalized)
+  cities.json              # compact top cities (fallback to API for rare)
 utils/
-supabase/
-client.ts               # browser client
-server.ts               # SSR client (cookies-safe)
-middleware.ts           # cookie bridging (internal)
+  supabase/
+    client.ts              # browser client
+    server.ts              # SSR client (cookies bridge)
+    middleware.ts          # cookie sync (internal)
 types/
-json.d.ts                 # JSON module typings
+  json.d.ts                # JSON module typings
 
-README.md
-tsconfig.json
-jsconfig.json
-.next.config
-> Imports use `@/…` aliases everywhere to keep paths stable across refactors.
+  All imports use @/… aliases (see tsconfig.json / jsconfig.json).
 
----
+⸻
 
-## 🔐 Security & Privacy
+🔐 Security & Privacy
+	•	Service-role key is server-only (API routes, server components, jobs)
+	•	RLS on user tables; every query scoped by user_id = auth.uid()
+	•	Minimal PII (name, email, academic context). No cross-tenant leakage
 
-- **Service-role key never exposed to the browser**. Server-only in API routes, background jobs, or server components.
-- **RLS** on user tables; all queries scoped by `user_id = auth.uid()`.
-- **Minimal PII**: name, email, academic context; docs are user-owned, never shared.
+⸻
 
----
+🧪 Local Development
 
-## 🧪 Local Development
+1) Prerequisites
+	•	Node 18+
+	•	Supabase project
+	•	Clerk application
 
-### 1) Prereqs
-- Node 18+
-- Supabase project
-- Clerk application
+2) Environment
 
-### 2) Env vars
-
-Create `.env.local` (never commit this):
-
-```env
+Create .env.local (never commit this file):
 # Clerk
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_***
 CLERK_SECRET_KEY=sk_***
@@ -157,59 +142,62 @@ NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJI...
 SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJI...   # server-only usage
 
-# RapidAPI (for GeoDB fallback)
+# RapidAPI (GeoDB fallback)
 RAPIDAPI_KEY=xxxxxxxxxxxxxxxx
 
-# OpenAI (for quiz generation later)
+# OpenAI (quiz generation later)
 OPENAI_API_KEY=sk-********************************
-3) Install & run
+
+3) Install & Run
 npm install
 npm run dev
-# App starts on http://localhost:3000 (or the next free port)
-🌍 Geo Data Strategy
-	•	Countries: served from local countries.json, fuzzy search via Fuse.js.
-	•	Cities: local cities.json (compact, common cities). If not found or exhausted, backend falls back to GeoDB (RapidAPI) with a short in-memory cache to control usage/costs.
+# App on http://localhost:3000 (or next free port)
 
-Why?
-	•	Low latency for the 95% path.
-	•	Resilient when external APIs throttle or are down.
-	•	Predictable costs.
+🌍 Geo Data Strategy
+	•	Countries: local countries.json + Fuse.js fuzzy search
+	•	Cities: local cities.json for common cases; if not found, backend falls back to GeoDB (RapidAPI) with a short in-memory cache to reduce cost
+
+Why this approach?
+	•	Low latency for the 95% path
+	•	Resilience when external APIs throttle or fail
+	•	Predictable costs without sacrificing global coverage
 
 ⸻
 
-🧱 Next Up (MVP backbone)
+🧱 Next Up (MVP Backbone)
 	1.	Persist onboarding
-	•	/app/api/onboarding/route.ts (POST)
+	•	app/api/onboarding/route.ts (POST)
 	•	Supabase onboarding_profiles (SQL + RLS)
-	•	Redirect to /dashboard when profile exists
+	•	Redirect to /dashboard if profile exists
 	2.	Dashboard skeleton
-	•	Shows profile summary, “Upload documents” CTA
+	•	Profile summary + Upload documents CTA
 	3.	Upload → Storage
 	•	/api/upload issues presigned URL (size/type limits per plan)
 	4.	Background processing
-	•	Vercel Cron (or Supabase Functions) to: extract text → chunk → embed → pgvector
+	•	Vercel Cron or Supabase Functions:
+	•	extract text → chunk → embed → pgvector
 	5.	Quiz generation
-	•	/api/quizzes → enforce plan limits → store quiz/questions
+	•	/api/quizzes → enforce limits → store quiz & questions
 	6.	Billing
-	•	Stripe products & webhooks → subscriptions table
+	•	Stripe products/webhooks → subscriptions table
 	7.	Observability
-	•	PostHog + Sentry + Vercel Logs hooks
+	•	PostHog, Sentry, Vercel Logs wiring
 
 ⸻
 
 🧾 Design Decisions (and why)
-	•	Clerk over building auth: fast, secure, SSO-ready, customizable.
-	•	Supabase DB + Storage: Postgres + RLS + pgvector in one toolchain.
-	•	Local-first geo: speed and cost control; fallback only when needed.
-	•	Minimal styling: clean light theme, black accents → reduces cognitive load.
-	•	Strict boundaries: service role keys and sensitive ops only on the server.
+	•	Clerk over custom auth — faster, secure, passwordless, SSO-ready
+	•	Supabase for Postgres + RLS + Storage + pgvector in one stack
+	•	Local-first geo to stay fast and keep API costs sane
+	•	Minimal UI (light, black accents) to reduce cognitive load
+	•	Hard boundaries — service role & sensitive ops are server-only
 
 ⸻
 
 🧪 Testing
-	•	Unit tests (coming) for utility transforms & quiz schema validation.
-	•	API tests (coming) for /api/geodb, /api/onboarding, /api/quizzes.
-	•	Manual E2E flows through onboarding → dashboard until Playwright is added.
+	•	Unit tests (soon) for transforms & quiz schema validation
+	•	API tests (soon) for /api/geodb, /api/onboarding, /api/quizzes
+	•	E2E (soon) via Playwright
 
 ⸻
 
@@ -226,3 +214,9 @@ We keep it lean:
 
 Proprietary © LetsReWise. All rights reserved.
 Contact: hello@letsrewise.com
+
+⸻
+
+Screenshots
+
+Add onboarding and dashboard screenshots here once available.
