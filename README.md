@@ -1,4 +1,4 @@
-# LetsReWise — AI Study Copilot (Next.js + Clerk + Supabase + OpenAI)
+# LetsReWise — AI Quiz Generation & Study Copilot (Next.js + Clerk + Supabase + OpenAI)
 
 A minimal, fast, and reliable AI study copilot. Upload study materials, generate high-quality quizzes, and practice with spaced repetition—without bloat or confusion.
 
