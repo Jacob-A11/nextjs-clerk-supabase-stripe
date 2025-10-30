@@ -4,7 +4,11 @@
 
 LetsReWise is an AI-powered learning and upskilling platform that transforms any document into contextual quizzes, flashcards, and revision workflows — helping users learn, retain, and master topics faster.
 
-# Primary outcome for users: “Upload → Learn → Revise → Retake → Master.”
+⸻
+
+# Upload → Learn → Revise → Retake → Master
+
+⸻
 
 # ✨ Why LetsReWise?
 
