@@ -1,8 +1,8 @@
-# LetsReWise — AI Quiz Generation & Study Copilot
+# LetsReWise — AI Study & Upskill Copilot for Students
 
 (Next.js • Clerk • Supabase • OpenAI • Stripe)
 
-A minimal, fast, and reliable AI study copilot. Upload study materials, generate high-quality quizzes, and practice—without bloat.
+LetsReWise is an AI-powered learning and upskilling platform that transforms any document into contextual quizzes, flashcards, and revision workflows — helping users learn, retain, and master topics faster.
 
 # ✨ Why LetsReWise?
 
