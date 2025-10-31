@@ -1,5 +1,6 @@
 "use client";
 
+import posthog from 'posthog-js';
 import { useEffect, useRef, useState } from "react";
 
 type Option = { id: string; label: string; code?: string };
@@ -98,6 +99,13 @@ export default function GeoSelect({
   };
 
   const select = (opt: Option) => {
+    posthog.capture("geo_option_selected", {
+      type: type,
+      selected_option_id: opt.id,
+      selected_option_label: opt.label,
+      ...(opt.code && { selected_option_code: opt.code }),
+      ...(type === "cities" && countryId && { country_id: countryId }),
+    });
     onChange(opt);
     setQ(opt.label);
     setOpen(false);

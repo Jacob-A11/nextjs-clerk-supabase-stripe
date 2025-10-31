@@ -1,8 +1,7 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
-  // This is required to support PostHog trailing slash API requests
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  // no experimental.appDir — already default in Next 16
   skipTrailingSlashRedirect: true,
   async rewrites() {
     return [

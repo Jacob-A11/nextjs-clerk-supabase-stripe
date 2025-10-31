@@ -68,9 +68,8 @@ export async function POST(req: Request) {
 
 export async function GET() {
   try {
-    const { userId } = auth();
+    const { userId } = await auth();
     console.log("🆔 Clerk User ID:", userId);
-    console.log("🟢 Supabase Upsert Result:", error ? error.message : "No error");
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

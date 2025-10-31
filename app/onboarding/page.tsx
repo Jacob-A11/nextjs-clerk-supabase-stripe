@@ -4,6 +4,7 @@
 import { useUser } from "@clerk/nextjs";
 import { useState } from "react";
 import GeoSelect from "@/components/GeoSelect";
+import posthog from 'posthog-js';
 
 type GeoOption = { id: string; label: string; code?: string };
 
@@ -33,6 +34,14 @@ export default function OnboardingPage() {
     if (!canSubmit) return;
     setSubmitting(true);
     try {
+      posthog.capture('onboarding_form_submitted', {
+        country: country?.label,
+        city: city?.label,
+        university: university.trim(),
+        course: course.trim(),
+        purpose_provided: purpose.trim().length > 0,
+        referral_source: referral,
+      });
       await fetch("/api/onboarding", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
