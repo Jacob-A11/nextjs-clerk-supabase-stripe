@@ -9,12 +9,14 @@ import { Inter, Roboto_Mono } from "next/font/google";
 // === ShadCN components (assumed generated under @/components/ui/*)
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+
 import {
   Accordion,
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
+
 import {
   Card,
   CardContent,
@@ -22,6 +24,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const geistSans = Inter({ subsets: ["latin"], variable: "--font-geist-sans" });

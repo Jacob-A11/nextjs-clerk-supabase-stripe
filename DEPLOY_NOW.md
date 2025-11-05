@@ -198,7 +198,7 @@ Once deployed, you have:
 
 **Vercel Dashboard:** https://vercel.com/dashboard
 
-**Expected URL:** `https://letsrewise.vercel.app` (or custom)
+**Expected URL:** custom
 
 **Deployment Time:** ~3 minutes
 
