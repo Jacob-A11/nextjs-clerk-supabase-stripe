@@ -1,752 +1,541 @@
-"use client";
-
-import { useEffect, useRef, useState } from "react";
-import { useUser } from "@clerk/nextjs";
-import { motion, useScroll, useSpring, useTransform } from "framer-motion";
-import posthog from "posthog-js";
-import { Inter, Roboto_Mono } from "next/font/google";
-
-// === ShadCN components (assumed generated under @/components/ui/*)
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "@/components/ui/accordion";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
+import { Check, Upload, Brain, BarChart3, Zap, Shield, Users } from "lucide-react";
 
-const geistSans = Inter({ subsets: ["latin"], variable: "--font-geist-sans" });
-const geistMono = Roboto_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
-
-// --- Animation helpers for staggered entrance (unchanged)
-const parentStagger = {
-  initial: { opacity: 0, y: 16 },
-  whileInView: { opacity: 1, y: 0 },
-  transition: { staggerChildren: 0.11, duration: 0.5, ease: "easeOut" },
-  viewport: { once: true, margin: "-80px" },
-};
-const childFade = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
-};
-
-export default function Page() {
-  const { user } = useUser();
-
-  // PostHog analytics/events (unchanged)
-  useEffect(() => {
-    if (!posthog.has_opted_out_capturing()) {
-      posthog.init("YOUR_POSTHOG_API_KEY", {
-        api_host: "https://app.posthog.com",
-        autocapture: true,
-        capture_pageview: true,
-      });
-    }
-    const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const scrollPercent = (scrollTop / docHeight) * 100;
-      if (scrollPercent > 25) posthog.capture("scroll_depth_25");
-      if (scrollPercent > 50) posthog.capture("scroll_depth_50");
-      if (scrollPercent > 75) posthog.capture("scroll_depth_75");
-      if (scrollPercent > 90) posthog.capture("scroll_depth_90");
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // Clerk redirect (unchanged)
-  useEffect(() => {
-    if (user) location.assign("/onboarding");
-  }, [user]);
-
-  // Framer-motion scroll progress (unchanged)
-  const { scrollYProgress, scrollY } = useScroll();
-  const scaleX = useSpring(scrollYProgress, { stiffness: 120, damping: 20, mass: 0.2 });
-  const heroBlobX = useTransform(scrollY, [0, 400], [0, -60]);
-  const heroBlobY = useTransform(scrollY, [0, 400], [0, 30]);
-  const footerBlobX = useTransform(scrollY, [0, 400], [0, 60]);
-  const footerBlobY = useTransform(scrollY, [0, 400], [0, -30]);
-
-  // CTA tracking (unchanged)
-  const uploadRef = useRef<HTMLInputElement | null>(null);
-  const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<string | null>(null);
-  const handleUploadClick = () => {
-    posthog.capture("click_upload_document");
-    uploadRef.current?.click();
-  };
-  const handleStartForFreeClick = () => posthog.capture("click_start_for_free");
-  const handleSeePricingClick = () => posthog.capture("click_see_pricing");
-  const handleSignup = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    posthog.capture("click_get_magic_link", { email });
-    setStatus("Thanks! Check your inbox to verify and start.");
-    setEmail("");
-  };
-
-  // Simple dark-mode toggle (no extra deps)
-  const [isDark, setIsDark] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    return document.documentElement.classList.contains("dark") ||
-      localStorage.getItem("theme") === "dark";
-  });
-  useEffect(() => {
-    const root = document.documentElement;
-    if (isDark) {
-      root.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      root.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
-  }, [isDark]);
-
+export default function LandingPage() {
   return (
-    <main
-      id="top"
-      className={`relative bg-background text-foreground ${geistSans.variable} ${geistMono.variable}`}
-      style={{ fontFamily: "var(--font-geist-sans), var(--font-geist-mono), ui-monospace, monospace" }}
-    >
-      {/* Scroll progress bar */}
-      <motion.div
-        style={{ scaleX }}
-        className="fixed left-0 top-0 z-[60] h-1 w-full origin-left bg-foreground/90"
-      />
-
-      {/* Theme toggle */}
-      <div className="fixed bottom-4 right-4 z-[70]">
-        <Button
-          variant="secondary"
-          className="rounded-full shadow-md"
-          onClick={() => setIsDark((v) => !v)}
-          aria-label="Toggle theme"
-        >
-          {isDark ? "🌙 Dark" : "☀️ Light"}
-        </Button>
-      </div>
-
-      {/* === HERO SECTION (layout unchanged, polished tokens) === */}
-      <section className="relative overflow-hidden border-b border-border/50 bg-gradient-to-b from-muted via-background to-muted/60 min-h-[90vh] flex items-center justify-center">
-        {/* Gradient + background blobs */}
-        <div aria-hidden className="absolute inset-0 -z-10">
-          <div className="absolute inset-0 bg-gradient-to-b from-muted via-background to-muted/60" />
-          <motion.div
-            style={{ x: heroBlobX, y: heroBlobY }}
-            className="absolute -top-64 left-1/2 h-[800px] w-[1200px] -translate-x-1/2 rounded-full blur-[140px] bg-[radial-gradient(circle_at_center,_hsl(var(--muted-foreground)/0.12)_0%,_transparent_70%)]"
-          />
-        </div>
-
-        <div className="relative z-10 mx-auto max-w-[1440px] px-6 md:px-10 lg:px-20 text-center">
-          <motion.h1
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="text-[clamp(2.6rem,6.5vw,4.6rem)] font-black leading-[1.05] tracking-tight"
-          >
-            Shape your documents into
-            <br className="hidden sm:block" />
-            quizzes that work your way
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ delay: 0.05, duration: 0.5 }}
-            className="mx-auto mt-4 max-w-3xl text-lg md:text-xl text-muted-foreground"
-          >
-            LetsReWise builds clean quizzes and flashcards from your notes in minutes. No coding. No setup.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 14 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-60px" }}
-            transition={{ delay: 0.1, duration: 0.5 }}
-            className="mx-auto mt-10 w-full max-w-[860px]"
-          >
-            <Card className="relative rounded-[28px] border border-border bg-card/95 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-card/80">
-              <CardContent className="p-2">
-                <div className="relative">
-                  <Input
-                    type="text"
-                    placeholder="Make a note-taking quiz that …"
-                    aria-label="Describe what you want to study"
-                    className="h-[64px] rounded-[24px] pr-16 text-[1.05rem]"
-                  />
-                  <Button
-                    onClick={handleStartForFreeClick}
-                    variant="default"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full"
-                    aria-label="Generate"
-                  >
-                    ↑
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-60px" }}
-            transition={{ delay: 0.16, duration: 0.45 }}
-            className="mx-auto mt-10 flex max-w-[980px] flex-wrap items-center justify-center gap-3"
-          >
-            {[
-              "SQE: Solicitors Qualifying Exam",
-              "ACCA Fundamentals",
-              "Onboarding Portal",
-              "Room Visualizer",
-              "Networking Basics",
-            ].map((chip, i) => (
-              <Button
-                key={i}
-                variant="outline"
-                className="rounded-full"
-                onClick={() => posthog.capture("chip_click", { chip })}
-              >
-                {chip}
-              </Button>
-            ))}
-          </motion.div>
-
-          <div className="mt-9 text-xl text-muted-foreground">Upload → Learn → Revise → Retake → Master</div>
-        </div>
-
-        <WaveDivider />
-      </section>
-
-      {/* === FEATURES (unchanged layout; ShadCN Cards; images /feature1-3.png) === */}
-      <section className="border-t border-border bg-background">
-        <div className="mx-auto max-w-[1440px] px-6 md:px-10 lg:px-20">
-          <div className="py-[clamp(5rem,10vw,9rem)] text-center">
-            <motion.h2 {...parentStagger} className="text-4xl md:text-5xl font-bold tracking-tight">
-              Consider yourself limitless.
-            </motion.h2>
-            <motion.p {...parentStagger} className="mt-3 text-lg md:text-xl text-muted-foreground">
-              If you can describe it, you can master it.
-            </motion.p>
+    <div className="flex min-h-screen flex-col">
+      {/* Navigation */}
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-16 items-center justify-between">
+          <div className="flex items-center gap-6">
+            <Link href="/" className="flex items-center space-x-2">
+              <span className="text-xl font-bold">LetsReWise</span>
+            </Link>
+            <nav className="hidden md:flex gap-6">
+              <Link href="#features" className="text-sm font-medium transition-colors hover:text-primary">
+                Features
+              </Link>
+              <Link href="#pricing" className="text-sm font-medium transition-colors hover:text-primary">
+                Pricing
+              </Link>
+              <Link href="#faq" className="text-sm font-medium transition-colors hover:text-primary">
+                FAQ
+              </Link>
+            </nav>
           </div>
+          <div className="flex items-center gap-4">
+            <Link href="/sign-in">
+              <Button variant="ghost" size="sm">Log in</Button>
+            </Link>
+            <Link href="/sign-up">
+              <Button size="sm">Start for Free</Button>
+            </Link>
+          </div>
+        </div>
+      </header>
 
-          <div className="flex flex-col gap-[8rem]">
-            {[
-              {
-                title: "Generate at the speed of thought",
-                desc: "Upload your notes or PDFs, and watch them transform into quizzes & flashcards instantly—complete with explanations and adaptive learning logic.",
-                image: "/feature1.png",
-                reverse: false,
-              },
-              {
-                title: "The intelligence built in automatically",
-                desc: "Every answer, flashcard, and quiz question is analyzed for meaning and accuracy. LetsReWise intelligently links related topics and explains mistakes, automatically.",
-                image: "/feature2.png",
-                reverse: true,
-              },
-              {
-                title: "Ready to use, instantly",
-                desc: "No setup, no waiting. Start revising the moment you upload. All your materials are stored securely and accessible from any device.",
-                image: "/feature3.png",
-                reverse: false,
-              },
-            ].map((feature, i) => (
-              <motion.div
-                key={i}
-                variants={parentStagger}
-                initial="initial"
-                whileInView="whileInView"
-                viewport={parentStagger.viewport}
-                className={`flex flex-col-reverse lg:flex-row ${
-                  feature.reverse ? "lg:flex-row-reverse" : ""
-                } items-center gap-12 lg:gap-24`}
-              >
-                {/* Text */}
-                <div className="lg:w-1/2 text-center lg:text-left">
-                  <h3 className="text-3xl md:text-4xl font-semibold leading-tight">{feature.title}</h3>
-                  <p className="mt-4 text-muted-foreground text-base md:text-lg leading-relaxed">
-                    {feature.desc}
+      <main className="flex-1">
+        {/* Hero Section */}
+        <section className="container py-24 md:py-32 lg:py-40">
+          <div className="mx-auto max-w-4xl text-center">
+            <Badge className="mb-4" variant="secondary">
+              Upload → Learn → Revise → Retake → Master
+            </Badge>
+            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+              Transform your documents into intelligent quizzes
+            </h1>
+            <p className="mt-6 text-lg text-muted-foreground sm:text-xl max-w-3xl mx-auto">
+              Upload your notes, PDFs, or study materials and let AI create personalized quizzes, flashcards, and revision plans—automatically. Cut your study time by 50%.
+            </p>
+            <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/sign-up">
+                <Button size="lg" className="text-base px-8">
+                  Start Learning Free
+                </Button>
+              </Link>
+              <Link href="#pricing">
+                <Button size="lg" variant="outline" className="text-base px-8">
+                  View Pricing
+                </Button>
+              </Link>
+            </div>
+            <p className="mt-4 text-sm text-muted-foreground">
+              No credit card required · Start instantly · Cancel anytime
+            </p>
+          </div>
+        </section>
+
+        {/* Product Preview */}
+        <section className="container pb-24">
+          <div className="mx-auto max-w-6xl">
+            <Card className="overflow-hidden border-2">
+              <div className="aspect-video bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center">
+                <div className="text-center p-8">
+                  <Brain className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+                  <p className="text-muted-foreground">Dashboard Preview</p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Upload documents, generate quizzes, track progress
                   </p>
-                  <Button onClick={handleStartForFreeClick} className="mt-6 rounded-full">
-                    Start Learning
-                  </Button>
                 </div>
-
-                {/* Image Card */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  transition={{ duration: 0.6, ease: "easeOut" }}
-                  className="lg:w-1/2"
-                >
-                  <Card className="relative rounded-[32px] overflow-hidden shadow-xl border bg-card">
-                    <div className="absolute inset-0 bg-gradient-to-tr from-muted via-background to-muted/60 rounded-[32px]" />
-                    <CardContent className="relative p-0">
-                      <img
-                        src={feature.image}
-                        alt={feature.title}
-                        className="w-full h-auto object-contain rounded-[32px]"
-                        loading="lazy"
-                      />
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              </motion.div>
-            ))}
+              </div>
+            </Card>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* === TESTIMONIALS (dual infinite scroll; unchanged motion; ShadCN cards) === */}
-      <section className="relative border-t border-border bg-gradient-to-b from-muted via-background to-muted overflow-hidden mt-[8rem]">
-        <div className="mx-auto max-w-[1440px] px-6 md:px-10 lg:px-20 py-[clamp(5rem,10vw,8rem)] text-center">
-          <motion.h2 {...parentStagger} className="text-4xl md:text-5xl font-semibold tracking-tight">
-            “Okay, @letsrewise has blown my mind.”
-          </motion.h2>
-          <motion.p {...parentStagger} className="mt-3 text-lg md:text-xl text-muted-foreground">
-            And other great things our users say about us.
-          </motion.p>
-          <Button onClick={handleStartForFreeClick} className="mt-8 rounded-full">
-            Start Learning
-          </Button>
-        </div>
+        {/* Features Section */}
+        <section id="features" className="container py-24 bg-muted/30">
+          <div className="mx-auto max-w-6xl">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+                Everything you need to master any subject
+              </h2>
+              <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+                Powered by AI, designed for learners. From document upload to exam mastery.
+              </p>
+            </div>
 
-        {/* Infinite Scrolling Rows */}
-        <div className="relative w-full overflow-hidden py-16">
-          {/* Row 1 */}
-          <div className="flex animate-scroll-left gap-6 md:gap-10 w-max mb-10">
-            {[
-              { name: "Aarav Patel", text: "Turned my boring PDFs into interactive flashcards in seconds!", avatar: "/avatars/1.jpg", icon: "in" },
-              { name: "Liam Evans", text: "The AI revision coach actually feels like a personal tutor.", avatar: "/avatars/2.jpg", icon: "p" },
-              { name: "Olivia Khan", text: "Clean UI, fast performance, and top-tier results. Game changer.", avatar: "/avatars/3.jpg", icon: "in" },
-              { name: "Sophia Williams", text: "Studying for SQE has never been this efficient and intuitive.", avatar: "/avatars/4.jpg", icon: "p" },
-              { name: "Jacob Brown", text: "It remembers what I get wrong and helps me revise smarter.", avatar: "/avatars/5.jpg", icon: "in" },
-              { name: "Emily Taylor", text: "The flashcard explanations are on point—no fluff, just clarity.", avatar: "/avatars/6.jpg", icon: "p" },
-              { name: "Ethan Lewis", text: "I literally passed my ACCA prep using this. Thank you!", avatar: "/avatars/7.jpg", icon: "in" },
-              { name: "Maya Anderson", text: "Felt like Base44 for students—beautifully crafted and smart.", avatar: "/avatars/8.jpg", icon: "p" },
-              { name: "Noah Martin", text: "Adaptive learning that’s actually adaptive. I love it.", avatar: "/avatars/9.jpg", icon: "p" },
-            ].map((t, i) => (
-              <Card
-                key={i}
-                className="min-w-[420px] rounded-2xl border border-border shadow-sm hover:shadow-md transition"
-              >
-                <CardContent className="p-6 flex flex-col justify-between text-left">
-                  <p className="text-base leading-relaxed text-muted-foreground/90">“{t.text}”</p>
-                  <div className="mt-6 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage src={t.avatar} alt={t.name} />
-                        <AvatarFallback>{t.name.slice(0,2)}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="text-sm font-semibold">{t.name}</p>
-                        <p className="text-xs text-muted-foreground">Beta User</p>
-                      </div>
-                    </div>
-                    <div className="text-muted-foreground text-sm font-bold uppercase">{t.icon}</div>
-                  </div>
-                </CardContent>
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {/* Feature 1 */}
+              <Card>
+                <CardHeader>
+                  <Upload className="h-10 w-10 mb-2 text-primary" />
+                  <CardTitle>Instant Document Processing</CardTitle>
+                  <CardDescription>
+                    Upload PDFs, Word docs, or notes. Our AI extracts key concepts and generates quizzes in seconds.
+                  </CardDescription>
+                </CardHeader>
               </Card>
-            ))}
-          </div>
 
-          {/* Row 2 */}
-          <div className="flex animate-scroll-right gap-6 md:gap-10 w-max">
-            {[
-              { name: "Leo Johnson", text: "It’s like Notion and ChatGPT had a smarter baby.", avatar: "/avatars/10.jpg", icon: "in" },
-              { name: "Chloe Green", text: "The analytics dashboard helped me identify weak topics instantly.", avatar: "/avatars/11.jpg", icon: "p" },
-              { name: "Daniel Wright", text: "UX is flawless—modern, responsive, and buttery smooth.", avatar: "/avatars/12.jpg", icon: "in" },
-              { name: "Isabella Moore", text: "This is what learning in 2025 should look like.", avatar: "/avatars/13.jpg", icon: "p" },
-              { name: "James Hall", text: "I use it every day for SQE1 revision. Feels like magic.", avatar: "/avatars/14.jpg", icon: "in" },
-              { name: "Ava Thomas", text: "Finally, an AI study app that’s trustworthy and accurate.", avatar: "/avatars/15.jpg", icon: "p" },
-              { name: "Elias Scott", text: "The onboarding flow was smoother than any SaaS I’ve used.", avatar: "/avatars/16.jpg", icon: "in" },
-              { name: "Grace Turner", text: "Everything I need for spaced repetition—no setup, just start.", avatar: "/avatars/17.jpg", icon: "p" },
-              { name: "William Allen", text: "I don’t even think about studying anymore—LetsReWise guides me.", avatar: "/avatars/18.jpg", icon: "in" },
-              { name: "Sofia Hughes", text: "AI-generated quizzes that *actually* make sense. Love it.", avatar: "/avatars/19.jpg", icon: "p" },
-            ].map((t, i) => (
-              <Card
-                key={i}
-                className="min-w-[420px] rounded-2xl border border-border shadow-sm hover:shadow-md transition"
-              >
-                <CardContent className="p-6 flex flex-col justify-between text-left">
-                  <p className="text-base leading-relaxed text-muted-foreground/90">“{t.text}”</p>
-                  <div className="mt-6 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage src={t.avatar} alt={t.name} />
-                        <AvatarFallback>{t.name.slice(0,2)}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="text-sm font-semibold">{t.name}</p>
-                        <p className="text-xs text-muted-foreground">Beta User</p>
-                      </div>
-                    </div>
-                    <div className="text-muted-foreground text-sm font-bold uppercase">{t.icon}</div>
-                  </div>
-                </CardContent>
+              {/* Feature 2 */}
+              <Card>
+                <CardHeader>
+                  <Brain className="h-10 w-10 mb-2 text-primary" />
+                  <CardTitle>AI-Powered Quiz Generation</CardTitle>
+                  <CardDescription>
+                    GPT-4 creates contextual questions with multiple choice, true/false, and short answer formats.
+                  </CardDescription>
+                </CardHeader>
               </Card>
-            ))}
-          </div>
-        </div>
 
-        {/* Keyframes for infinite marquee */}
-        <style jsx>{`
-          @keyframes scroll-left {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-          }
-          @keyframes scroll-right {
-            0% { transform: translateX(-50%); }
-            100% { transform: translateX(0); }
-          }
-          .animate-scroll-left {
-            animation: scroll-left 60s linear infinite;
-          }
-          .animate-scroll-right {
-            animation: scroll-right 60s linear infinite;
-          }
-        `}</style>
-      </section>
+              {/* Feature 3 */}
+              <Card>
+                <CardHeader>
+                  <Zap className="h-10 w-10 mb-2 text-primary" />
+                  <CardTitle>Smart Flashcards</CardTitle>
+                  <CardDescription>
+                    Spaced repetition algorithm ensures you review at optimal intervals for maximum retention.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
 
-      {/* === PRICING (unchanged layout; glossy ShadCN Cards) === */}
-      <section id="pricing" className="relative border-t border-border bg-[#0d1117] text-white py-[clamp(6rem,10vw,9rem)] overflow-hidden">
-        <div className="mx-auto max-w-[1440px] px-6 md:px-10 lg:px-20">
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-10 mb-20">
-            <div>
-              <motion.h2
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
-                className="text-4xl md:text-5xl font-semibold leading-tight"
-              >
-                Pricing plans for{" "}
-                <span className="bg-gradient-to-r from-[#f2f2f2] to-[#bebfbd] bg-clip-text text-transparent">
-                  every learner
-                </span>
-              </motion.h2>
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-                className="mt-4 text-lg text-white/70 max-w-md"
-              >
-                Start for free and scale as you go with flexible plans designed to match your learning goals.
-              </motion.p>
+              {/* Feature 4 */}
+              <Card>
+                <CardHeader>
+                  <BarChart3 className="h-10 w-10 mb-2 text-primary" />
+                  <CardTitle>Progress Analytics</CardTitle>
+                  <CardDescription>
+                    Track your performance, identify weak areas, and watch your scores improve over time.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+
+              {/* Feature 5 */}
+              <Card>
+                <CardHeader>
+                  <Shield className="h-10 w-10 mb-2 text-primary" />
+                  <CardTitle>Secure & Private</CardTitle>
+                  <CardDescription>
+                    Your documents and data are encrypted and protected with enterprise-grade security.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+
+              {/* Feature 6 */}
+              <Card>
+                <CardHeader>
+                  <Users className="h-10 w-10 mb-2 text-primary" />
+                  <CardTitle>Team Collaboration</CardTitle>
+                  <CardDescription>
+                    Share quiz sets with classmates or study groups. Learn together, achieve together.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
             </div>
           </div>
+        </section>
 
-          <div className="flex flex-col md:flex-row items-center justify-center gap-10">
-            {/* Free */}
-            <motion.div
-              initial={{ y: 30, opacity: 0 }}
-              whileInView={{ y: 0, opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-            >
-              <Card
-                className="relative w-full md:w-[420px] rounded-[28px] border border-white/10"
-                style={{
-                  background:
-                    "linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(245,245,245,0.9) 100%)",
-                  boxShadow:
-                    "inset 0 0 0 1px rgba(255,255,255,0.2), 0 20px 60px rgba(0,0,0,0.25)",
-                  color: "#111",
-                }}
-              >
-                <CardHeader>
-                  <CardTitle className="text-2xl font-semibold">Start for free.</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-3 mb-8 text-base/relaxed text-neutral-800">
-                    <li>✅ 3 uploads per month</li>
-                    <li>✅ Auto-generated quizzes</li>
-                    <li>✅ Smart flashcards</li>
-                    <li>✅ Daily quick revision</li>
-                  </ul>
-                  <Button onClick={handleStartForFreeClick} className="rounded-full">
-                    Start Learning
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
+        {/* Social Proof */}
+        <section className="container py-24">
+          <div className="mx-auto max-w-4xl text-center">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              Trusted by students and professionals worldwide
+            </h2>
+            <p className="mt-4 text-lg text-muted-foreground">
+              Join 1,000+ learners who are mastering their exams with LetsReWise
+            </p>
+            <div className="mt-12 grid gap-8 md:grid-cols-3">
+              <div>
+                <div className="text-4xl font-bold">50%</div>
+                <p className="text-muted-foreground mt-2">Less study time needed</p>
+              </div>
+              <div>
+                <div className="text-4xl font-bold">95%</div>
+                <p className="text-muted-foreground mt-2">Pass rate improvement</p>
+              </div>
+              <div>
+                <div className="text-4xl font-bold">1,000+</div>
+                <p className="text-muted-foreground mt-2">Active learners</p>
+              </div>
+            </div>
+          </div>
+        </section>
 
-            {/* Pro */}
-            <motion.div
-              initial={{ y: 60, opacity: 0 }}
-              whileInView={{ y: 0, opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.9, ease: "easeOut", delay: 0.2 }}
-            >
-              <Card
-                className="relative w-full md:w-[420px] rounded-[28px] border border-white/10"
-                style={{
-                  background:
-                    "linear-gradient(145deg, rgba(255,255,255,0.96) 0%, rgba(245,245,245,0.9) 100%)",
-                  boxShadow:
-                    "inset 0 0 0 1px rgba(255,255,255,0.3), 0 20px 70px rgba(0,0,0,0.3)",
-                  color: "#111",
-                }}
-              >
+        {/* Pricing Section */}
+        <section id="pricing" className="container py-24 bg-muted/30">
+          <div className="mx-auto max-w-6xl">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+                Simple, credit-based pricing
+              </h2>
+              <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+                Pay only for what you use. All plans include full access to features.
+              </p>
+            </div>
+
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+              {/* Free Plan */}
+              <Card className="relative">
                 <CardHeader>
-                  <CardTitle className="text-2xl font-semibold">Pro plan</CardTitle>
-                  <CardDescription className="text-4xl font-bold text-neutral-900">
-                    £9.99<span className="text-lg font-normal text-neutral-600">/month</span>
+                  <CardTitle>Free</CardTitle>
+                  <div className="mt-4">
+                    <span className="text-4xl font-bold">£0</span>
+                    <span className="text-muted-foreground">/month</span>
+                  </div>
+                  <CardDescription className="mt-2">
+                    0 credits · Perfect for trying out
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ul className="space-y-3 mb-8 text-base/relaxed text-neutral-800">
-                    <li>✨ Unlimited uploads</li>
-                    <li>✨ AI Revision Coach</li>
-                    <li>✨ Share & export sets</li>
-                    <li>✨ Priority support</li>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-center">
+                      <Check className="h-4 w-4 mr-2 text-primary" />
+                      Access to all features
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="h-4 w-4 mr-2 text-primary" />
+                      Buy credits as needed
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="h-4 w-4 mr-2 text-primary" />
+                      Community support
+                    </li>
                   </ul>
-                  <Button onClick={handleSeePricingClick} className="rounded-full">
-                    Go Pro
-                  </Button>
                 </CardContent>
+                <CardFooter>
+                  <Link href="/sign-up" className="w-full">
+                    <Button variant="outline" className="w-full">Get Started</Button>
+                  </Link>
+                </CardFooter>
               </Card>
-            </motion.div>
-          </div>
-        </div>
 
-        {/* Subtle gradient glow under cards */}
-        <motion.div
-          style={{ x: footerBlobX, y: footerBlobY }}
-          className="absolute inset-x-0 bottom-0 h-[300px] bg-gradient-to-t from-[#aef25d33] via-transparent to-transparent pointer-events-none"
-        />
-      </section>
-
-      {/* === FAQ (ShadCN Accordion; unchanged content) === */}
-      <section
-        id="faq"
-        className="border-t border-border bg-gradient-to-br from-muted via-background to-muted py-[clamp(6rem,10vw,9rem)]"
-      >
-        <div className="mx-auto max-w-4xl px-6 md:px-10 lg:px-20">
-          <motion.h2
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-            className="text-center text-4xl md:text-5xl font-extrabold tracking-tight mb-10 bg-gradient-to-r from-primary via-primary/60 to-secondary bg-clip-text text-transparent"
-            style={{ letterSpacing: "-.01em" }}
-          >
-            Frequently Asked Questions
-          </motion.h2>
-
-          <Accordion type="single" collapsible className="space-y-4">
-            {[
-              {
-                q: "What makes LetsReWise different from other study tools?",
-                a: "LetsReWise turns your notes and documents into adaptive quizzes with detailed explanations, not just simple flashcards. Our platform leverages smart AI to track your weaknesses, provide tailored revision, and help you master any subject efficiently. No templates, no manual setup—just seamless learning.",
-              },
-              {
-                q: "How do I know my data is secure?",
-                a: "Your uploads are encrypted end-to-end and never shared with third parties. We use industry-leading security practices and you always control your content. Privacy and trust are built into our core, so you can focus on learning without worry.",
-              },
-              {
-                q: "Can I use LetsReWise for any subject or exam?",
-                a: "Absolutely! Whether you're preparing for professional exams, school tests, or personal development, LetsReWise adapts to your needs. Just upload your materials—from law notes to finance textbooks—and our system generates custom quizzes suited to your goals.",
-              },
-              {
-                q: "Do I need to format my notes in a special way?",
-                a: "No special formatting required. Upload PDFs, Word docs, or plain text—our AI understands natural language and extracts key concepts automatically. Save hours of manual input and let LetsReWise do the heavy lifting.",
-              },
-              {
-                q: "How does the AI personalize my revision?",
-                a: "LetsReWise analyzes your answers and learning patterns, then adapts future quizzes to focus on your weak spots. You'll get explanations for mistakes, spaced repetition, and targeted practice—all designed to boost retention and confidence.",
-              },
-              {
-                q: "Can I share or export my quiz sets?",
-                a: "Yes! Easily export to CSV or Anki, and share sets with classmates or study groups. Collaboration is simple, so you can learn together or help others master tough topics.",
-              },
-              {
-                q: "What’s included in the free plan?",
-                a: "The free plan gives you 3 uploads per month, unlimited access to generated quizzes and flashcards, and daily quick revision. Upgrade to Pro for unlimited uploads, advanced analytics, and priority support.",
-              },
-              {
-                q: "How fast can I start revising after upload?",
-                a: "You can begin revising within seconds. Upload your document, and LetsReWise instantly builds quizzes and flashcards—no waiting or setup required. Perfect for last-minute cramming or structured long-term revision.",
-              },
-              {
-                q: "Is LetsReWise suitable for teams or organizations?",
-                a: "Yes! We support bulk onboarding, team analytics, and collaborative features for schools, universities, and businesses. Contact us for custom solutions that fit your group’s learning needs.",
-              },
-              {
-                q: "Why should I trust LetsReWise with my learning?",
-                a: "We’re built by educators, engineers, and learners who believe great revision should be effortless and effective. Our mission is your mastery—no distractions, no gimmicks, just results. Join thousands who’ve made the switch to smarter studying.",
-              },
-            ].map((item, i) => (
-              <Card key={i} className="bg-card/90 rounded-2xl shadow-sm border">
-                <CardContent className="p-0">
-                  <AccordionItem value={`faq-${i}`} className="px-6">
-                    <AccordionTrigger className="text-left text-lg md:text-xl font-bold leading-snug">
-                      {item.q}
-                    </AccordionTrigger>
-                    <AccordionContent className="text-muted-foreground text-base md:text-lg leading-relaxed">
-                      {item.a}
-                    </AccordionContent>
-                  </AccordionItem>
-                </CardContent>
-              </Card>
-            ))}
-          </Accordion>
-        </div>
-      </section>
-
-      {/* === CTA SECTION (unchanged layout; refined tokens) === */}
-      <section
-        id="signup"
-        className="relative min-h-[90vh] flex items-center justify-center overflow-hidden border-t border-border bg-gradient-to-b from-muted via-background to-muted"
-      >
-        {/* Animated background elements */}
-        <motion.div
-          aria-hidden="true"
-          className="absolute inset-0 z-0"
-          style={{
-            background:
-              "radial-gradient(ellipse 100% 70% at 60% 40%, hsl(var(--muted-foreground)/0.08) 0%, transparent 80%)",
-          }}
-        />
-        <motion.div
-          aria-hidden="true"
-          className="absolute -bottom-40 left-1/2 h-[650px] w-[1100px] -translate-x-1/2 rounded-full blur-[180px] bg-[radial-gradient(circle_at_center,_hsl(var(--foreground)/0.10),_transparent_80%)]"
-          animate={{ opacity: [0.3, 0.6, 0.3], scale: [1, 1.05, 1] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        />
-
-        <div className="relative z-10 flex flex-col items-center justify-center w-full px-6 md:px-10 lg:px-20 py-28 text-center">
-          <motion.h2
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-120px" }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="text-5xl md:text-7xl font-extrabold tracking-tight text-center"
-            style={{ letterSpacing: "-.02em" }}
-          >
-            Stop studying hard. Start learning{" "}
-            <span className="underline decoration-primary/30 decoration-4 underline-offset-4">smart</span>.
-          </motion.h2>
-
-          <motion.p
-            initial={{ opacity: 0, y: 25 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ delay: 0.15, duration: 0.7, ease: "easeOut" }}
-            className="mt-8 max-w-3xl text-center text-xl md:text-2xl text-muted-foreground font-medium leading-relaxed"
-          >
-            Let LetsReWise turn your messy notes and PDFs into crystal-clear quizzes, adaptive flashcards, and
-            intelligent revision plans—automatically. Our users cut their study time by <strong>50%</strong> and
-            retain more by doing less. If you can upload it, you can master it.
-          </motion.p>
-
-          {/* 3 benefit cards */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25, duration: 0.6, ease: "easeOut" }}
-            className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl"
-          >
-            {[
-              {
-                title: "No setup required",
-                text: "Upload your document and start learning instantly. LetsReWise does all the structuring, summarizing, and quizzing for you.",
-              },
-              {
-                title: "AI-powered mastery engine",
-                text: "Your quizzes evolve as you do — focusing on your weak areas and adapting with every session, like a personal tutor who never sleeps.",
-              },
-              {
-                title: "Loved by exam toppers & professionals",
-                text: "From SQE and ACCA to onboarding and certifications, our learners trust LetsReWise to make complex material simple and unforgettable.",
-              },
-            ].map((item, i) => (
-              <Card
-                key={i}
-                className="bg-card/80 rounded-2xl border shadow-sm hover:shadow-lg transition"
-              >
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg md:text-xl">{item.title}</CardTitle>
+              {/* Starter Plan */}
+              <Card className="relative">
+                <CardHeader>
+                  <CardTitle>Starter</CardTitle>
+                  <div className="mt-4">
+                    <span className="text-4xl font-bold">£9</span>
+                    <span className="text-muted-foreground">/month</span>
+                  </div>
+                  <CardDescription className="mt-2">
+                    108 credits/month · For casual learners
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground text-base leading-relaxed">{item.text}</p>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-center">
+                      <Check className="h-4 w-4 mr-2 text-primary" />
+                      3 document uploads
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="h-4 w-4 mr-2 text-primary" />
+                      36 quiz generations
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="h-4 w-4 mr-2 text-primary" />
+                      Unused credits roll over
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="h-4 w-4 mr-2 text-primary" />
+                      Email support
+                    </li>
+                  </ul>
                 </CardContent>
+                <CardFooter>
+                  <Link href="/sign-up" className="w-full">
+                    <Button className="w-full">Start Learning</Button>
+                  </Link>
+                </CardFooter>
               </Card>
-            ))}
-          </motion.div>
 
-          {/* Email capture */}
-          <motion.form
-            initial={{ opacity: 0, y: 28 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ delay: 0.3, duration: 0.6, ease: "easeOut" }}
-            onSubmit={handleSignup}
-            className="mt-14 w-full max-w-xl flex flex-col sm:flex-row items-center gap-4 bg-card/90 rounded-[2rem] p-5 shadow-lg border"
-          >
-            <Input
-              type="email"
-              required
-              placeholder="Enter your email to start free"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="flex-1 w-full rounded-full px-5 py-6 text-lg font-semibold"
-            />
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
-              <Button type="submit" className="rounded-full px-8 py-6 text-lg font-bold">
-                Get Started Free
-              </Button>
-            </motion.div>
-          </motion.form>
+              {/* Pro Plan */}
+              <Card className="relative border-primary shadow-lg">
+                <Badge className="absolute top-4 right-4">Most Popular</Badge>
+                <CardHeader>
+                  <CardTitle>Pro</CardTitle>
+                  <div className="mt-4">
+                    <span className="text-4xl font-bold">£29</span>
+                    <span className="text-muted-foreground">/month</span>
+                  </div>
+                  <CardDescription className="mt-2">
+                    348 credits/month · For serious students
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-center">
+                      <Check className="h-4 w-4 mr-2 text-primary" />
+                      11 document uploads
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="h-4 w-4 mr-2 text-primary" />
+                      116 quiz generations
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="h-4 w-4 mr-2 text-primary" />
+                      Priority AI processing
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="h-4 w-4 mr-2 text-primary" />
+                      Advanced analytics
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="h-4 w-4 mr-2 text-primary" />
+                      Priority support
+                    </li>
+                  </ul>
+                </CardContent>
+                <CardFooter>
+                  <Link href="/sign-up" className="w-full">
+                    <Button className="w-full">Go Pro</Button>
+                  </Link>
+                </CardFooter>
+              </Card>
 
-          {status && (
-            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-6 text-base text-muted-foreground font-semibold">
-              {status}
-            </motion.p>
-          )}
+              {/* Team Plan */}
+              <Card className="relative">
+                <CardHeader>
+                  <CardTitle>Team</CardTitle>
+                  <div className="mt-4">
+                    <span className="text-4xl font-bold">£99</span>
+                    <span className="text-muted-foreground">/month</span>
+                  </div>
+                  <CardDescription className="mt-2">
+                    1,200 credits/month · For groups
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-center">
+                      <Check className="h-4 w-4 mr-2 text-primary" />
+                      40 document uploads
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="h-4 w-4 mr-2 text-primary" />
+                      400 quiz generations
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="h-4 w-4 mr-2 text-primary" />
+                      Team collaboration
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="h-4 w-4 mr-2 text-primary" />
+                      Shared quiz libraries
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="h-4 w-4 mr-2 text-primary" />
+                      Dedicated support
+                    </li>
+                  </ul>
+                </CardContent>
+                <CardFooter>
+                  <Link href="/sign-up" className="w-full">
+                    <Button className="w-full">Get Team Plan</Button>
+                  </Link>
+                </CardFooter>
+              </Card>
+            </div>
 
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.6 }}
-            className="mt-10 text-sm text-muted-foreground max-w-xl text-center"
-          >
-            No credit card required · Start instantly · Cancel anytime
-          </motion.p>
+            {/* Credit Costs */}
+            <div className="mt-16 text-center">
+              <h3 className="text-xl font-semibold mb-6">How credits work</h3>
+              <div className="grid gap-4 md:grid-cols-3 max-w-3xl mx-auto">
+                <Card>
+                  <CardHeader>
+                    <div className="text-3xl font-bold">30</div>
+                    <CardDescription>credits per document upload</CardDescription>
+                  </CardHeader>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <div className="text-3xl font-bold">3</div>
+                    <CardDescription>credits per quiz generation</CardDescription>
+                  </CardHeader>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <div className="text-3xl font-bold">1</div>
+                    <CardDescription>credit per AI explanation</CardDescription>
+                  </CardHeader>
+                </Card>
+              </div>
+              <p className="mt-6 text-sm text-muted-foreground">
+                Need more credits? Purchase additional credits anytime at £0.003 per credit.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section id="faq" className="container py-24">
+          <div className="mx-auto max-w-3xl">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+                Frequently Asked Questions
+              </h2>
+            </div>
+
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="item-1">
+                <AccordionTrigger>What makes LetsReWise different from other study tools?</AccordionTrigger>
+                <AccordionContent>
+                  LetsReWise uses advanced AI (GPT-4) to generate contextual, accurate quizzes from your documents. Unlike generic quiz tools, we analyze your specific content and create questions that test real understanding, not just memorization. Plus, our credit-based pricing means you only pay for what you use.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-2">
+                <AccordionTrigger>How do credits work?</AccordionTrigger>
+                <AccordionContent>
+                  Credits are used for AI-powered features. Uploading a document costs 30 credits, generating a quiz costs 3 credits, and getting an AI explanation costs 1 credit. Monthly plans include credits that roll over if unused. You can also purchase additional credits anytime.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-3">
+                <AccordionTrigger>Is my data secure and private?</AccordionTrigger>
+                <AccordionContent>
+                  Absolutely. All your documents and data are encrypted in transit and at rest. We use enterprise-grade security (Supabase with Row Level Security) to ensure your content stays private. We never share your data with third parties, and you can delete your account and all data anytime.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-4">
+                <AccordionTrigger>Can I use LetsReWise for any subject or exam?</AccordionTrigger>
+                <AccordionContent>
+                  Yes! LetsReWise works with any subject—from law (SQE, Bar exams) to accounting (ACCA, CPA), medicine (USMLE), or university courses. Our AI adapts to your content and creates relevant questions regardless of the topic.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-5">
+                <AccordionTrigger>Do I need to format my notes in a special way?</AccordionTrigger>
+                <AccordionContent>
+                  No special formatting required! Upload PDFs, Word documents, or plain text files. Our AI automatically extracts key concepts and generates quizzes. The better organized your notes, the better the quizzes, but we handle messy notes too.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-6">
+                <AccordionTrigger>Can I share quiz sets with my study group?</AccordionTrigger>
+                <AccordionContent>
+                  Yes! Team plan users can share quiz sets and collaborate with classmates. You can also export quizzes as PDFs or share links to specific quiz sets.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-7">
+                <AccordionTrigger>What's included in the free plan?</AccordionTrigger>
+                <AccordionContent>
+                  The free plan gives you access to all features but doesn't include monthly credits. You can purchase credits as needed to upload documents and generate quizzes. It's perfect for trying out the platform before committing to a paid plan.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-8">
+                <AccordionTrigger>How fast can I start revising after upload?</AccordionTrigger>
+                <AccordionContent>
+                  Most documents are processed in under 60 seconds. Once uploaded, you can generate quizzes immediately. The AI works in the background to create embeddings for semantic search, but you don't have to wait for that to start learning.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+        </section>
+
+        {/* Final CTA */}
+        <section className="container py-24 bg-muted/30">
+          <div className="mx-auto max-w-3xl text-center">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+              Ready to transform your learning?
+            </h2>
+            <p className="mt-6 text-lg text-muted-foreground">
+              Join thousands of students and professionals who are mastering their exams with AI-powered quizzes and flashcards.
+            </p>
+            <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/sign-up">
+                <Button size="lg" className="text-base px-8">
+                  Start Learning Free
+                </Button>
+              </Link>
+              <Link href="#pricing">
+                <Button size="lg" variant="outline" className="text-base px-8">
+                  View Pricing
+                </Button>
+              </Link>
+            </div>
+            <p className="mt-4 text-sm text-muted-foreground">
+              No credit card required · Start instantly · Cancel anytime
+            </p>
+          </div>
+        </section>
+      </main>
+
+      {/* Footer */}
+      <footer className="border-t">
+        <div className="container py-12">
+          <div className="grid gap-8 md:grid-cols-4">
+            <div>
+              <h3 className="font-bold mb-4">LetsReWise</h3>
+              <p className="text-sm text-muted-foreground">
+                AI-powered learning platform for students and professionals.
+              </p>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Product</h4>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="#features" className="text-muted-foreground hover:text-foreground">Features</Link></li>
+                <li><Link href="#pricing" className="text-muted-foreground hover:text-foreground">Pricing</Link></li>
+                <li><Link href="/dashboard" className="text-muted-foreground hover:text-foreground">Dashboard</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Company</h4>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/about" className="text-muted-foreground hover:text-foreground">About</Link></li>
+                <li><Link href="/blog" className="text-muted-foreground hover:text-foreground">Blog</Link></li>
+                <li><Link href="/contact" className="text-muted-foreground hover:text-foreground">Contact</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Legal</h4>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/privacy" className="text-muted-foreground hover:text-foreground">Privacy</Link></li>
+                <li><Link href="/terms" className="text-muted-foreground hover:text-foreground">Terms</Link></li>
+                <li><Link href="/security" className="text-muted-foreground hover:text-foreground">Security</Link></li>
+              </ul>
+            </div>
+          </div>
+          <div className="mt-12 pt-8 border-t text-center text-sm text-muted-foreground">
+            <p>&copy; 2025 LetsReWise. All rights reserved.</p>
+          </div>
         </div>
-      </section>
-    </main>
-  );
-}
-
-// Monochrome pixel-accurate wave divider (unchanged)
-function WaveDivider() {
-  return (
-    <div className="relative h-12">
-      <svg
-        className="absolute bottom-0 left-0 h-full w-full text-foreground/10"
-        viewBox="0 0 1440 100"
-        preserveAspectRatio="none"
-        aria-hidden="true"
-      >
-        <path
-          d="M0,40 C240,120 480,0 720,60 C960,120 1200,20 1440,60 L1440,100 L0,100 Z"
-          fill="currentColor"
-        />
-      </svg>
+      </footer>
     </div>
   );
 }
