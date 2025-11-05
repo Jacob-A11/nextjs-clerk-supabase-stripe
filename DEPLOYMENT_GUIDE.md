@@ -119,7 +119,7 @@ NEXT_PUBLIC_POSTHOG_HOST=https://app.posthog.com
 RAPIDAPI_KEY=your_key_here
 
 # App URL
-NEXT_PUBLIC_APP_URL=https://letsrewise.com
+NEXT_PUBLIC_APP_URL=https://yourdomain.com
 ```
 
 ### 2. Supabase Setup
@@ -776,7 +776,7 @@ posthog.capture('quiz_completed', {
 - [ ] Set up Vercel alerts
 - [ ] Configure Sentry error tracking
 - [ ] Set up uptime monitoring (Better Uptime)
-- [ ] Create status page (status.letsrewise.com)
+- [ ] Create status page (status.yourdomain.com)
 - [ ] Set up cost alerts (OpenAI, Supabase, Vercel)
 
 ### Backup Strategy

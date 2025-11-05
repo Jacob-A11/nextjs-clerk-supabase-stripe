@@ -16,7 +16,7 @@ Before deploying to Vercel, ensure you have:
 
 1. Go to [vercel.com](https://vercel.com)
 2. Click "Add New Project"
-3. Import your GitHub repository: `sree-pm/letsrewise`
+3. Import your GitHub repository
 4. Vercel will auto-detect Next.js configuration
 5. Add environment variables (see section below)
 6. Click "Deploy"
@@ -101,7 +101,7 @@ The project is already configured for Vercel with:
 After deployment, you can add a custom domain:
 
 1. Go to Vercel Dashboard → Settings → Domains
-2. Add your domain (e.g., `letsrewise.com`)
+2. Add your domain (e.g., `yourdomain.com`)
 3. Update DNS records as instructed
 4. SSL certificate is automatically provisioned
 
@@ -109,7 +109,7 @@ After deployment, you can add a custom domain:
 
 After successful deployment:
 
-- [ ] Visit your Vercel URL (e.g., `letsrewise.vercel.app`)
+- [ ] Visit your Vercel URL
 - [ ] Test landing page loads correctly
 - [ ] Verify responsive design on mobile
 - [ ] Check navigation links work
@@ -186,7 +186,7 @@ To deploy just the landing page without backend features:
 2. Create account
 3. Get test API keys from Dashboard
 4. Add to Vercel environment variables
-5. Set up webhook endpoint: `https://your-app.vercel.app/api/webhooks/stripe`
+5. Set up webhook endpoint
 
 **Free Tier:** No monthly fees, pay per transaction
 
@@ -216,7 +216,7 @@ To deploy just the landing page without backend features:
 
 After deployment, you'll have:
 
-- **Live URL**: `https://letsrewise.vercel.app` (or custom domain)
+- **Live URL**: custom domain
 - **Global CDN**: Fast loading worldwide
 - **Automatic HTTPS**: SSL certificate included
 - **Auto-deploys**: Every git push triggers new deployment
@@ -236,7 +236,7 @@ If you encounter issues:
 - Vercel Dashboard: https://vercel.com/dashboard
 - Vercel Docs: https://vercel.com/docs
 - Next.js Deployment: https://nextjs.org/docs/deployment
-- GitHub Repository: https://github.com/sree-pm/letsrewise
+- GitHub Repository: [repository-url]
 
 ---
 

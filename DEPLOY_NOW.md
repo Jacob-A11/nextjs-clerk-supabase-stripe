@@ -2,7 +2,7 @@
 
 ## ✅ Prerequisites Complete
 
-- ✅ Code pushed to GitHub: `sree-pm/letsrewise`
+- ✅ Code pushed to GitHub: [repository-name]
 - ✅ Landing page ready and tested
 - ✅ Vercel configuration added
 - ✅ Environment variables documented
@@ -32,7 +32,7 @@ Open your browser and go to: **https://vercel.com**
    
 2. Find your repository:
    - Search for: `letsrewise`
-   - Or scroll to find: `sree-pm/letsrewise`
+   - Or scroll to find your repository
    
 3. Click **"Import"** next to the repository
 
@@ -112,7 +112,7 @@ After deployment, test:
 ### Add Custom Domain
 
 1. Go to Vercel Dashboard → Your Project → Settings → Domains
-2. Add your domain (e.g., `letsrewise.com`)
+2. Add your domain (e.g., `yourdomain.com`)
 3. Update DNS records as instructed
 4. SSL certificate auto-provisioned
 
@@ -194,7 +194,7 @@ Once deployed, you have:
 
 ## 📞 Quick Reference
 
-**GitHub Repository:** https://github.com/sree-pm/letsrewise
+**GitHub Repository:** [repository-url]
 
 **Vercel Dashboard:** https://vercel.com/dashboard
 

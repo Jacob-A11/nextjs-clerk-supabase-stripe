@@ -12,7 +12,7 @@ Disallow: /dashboard
 Disallow: /_next/
 Disallow: /private/
 
-Sitemap: https://letsrewise.com/sitemap.xml
+Sitemap: ${process.env.NEXT_PUBLIC_APP_URL || "https://yourdomain.com"}/sitemap.xml
 `;
 
   return new NextResponse(content, {

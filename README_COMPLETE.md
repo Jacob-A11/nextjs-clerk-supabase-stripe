@@ -160,7 +160,7 @@ letsrewise/
 
 ```bash
 # Clone repository
-git clone https://github.com/sree-pm/letsrewise.git
+git clone [repository-url]
 cd letsrewise
 
 # Install dependencies
@@ -441,9 +441,9 @@ POST   /api/webhooks/stripe       # Stripe webhooks
 
 ## 📞 Contact
 
-- **Website:** [letsrewise.com](https://letsrewise.com)
-- **Email:** hello@letsrewise.com
-- **GitHub:** [github.com/sree-pm/letsrewise](https://github.com/sree-pm/letsrewise)
+- **Website:** [Website information removed]
+- **Email:** [Contact information removed]
+- **GitHub:** [Repository information removed]
 
 ---
 

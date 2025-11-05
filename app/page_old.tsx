@@ -313,7 +313,7 @@ export default function Page() {
       <section className="relative border-t border-border bg-gradient-to-b from-muted via-background to-muted overflow-hidden mt-[8rem]">
         <div className="mx-auto max-w-[1440px] px-6 md:px-10 lg:px-20 py-[clamp(5rem,10vw,8rem)] text-center">
           <motion.h2 {...parentStagger} className="text-4xl md:text-5xl font-semibold tracking-tight">
-            “Okay, @letsrewise has blown my mind.”
+            "Okay, this platform has blown my mind."
           </motion.h2>
           <motion.p {...parentStagger} className="mt-3 text-lg md:text-xl text-muted-foreground">
             And other great things our users say about us.
@@ -328,15 +328,15 @@ export default function Page() {
           {/* Row 1 */}
           <div className="flex animate-scroll-left gap-6 md:gap-10 w-max mb-10">
             {[
-              { name: "Aarav Patel", text: "Turned my boring PDFs into interactive flashcards in seconds!", avatar: "/avatars/1.jpg", icon: "in" },
-              { name: "Liam Evans", text: "The AI revision coach actually feels like a personal tutor.", avatar: "/avatars/2.jpg", icon: "p" },
-              { name: "Olivia Khan", text: "Clean UI, fast performance, and top-tier results. Game changer.", avatar: "/avatars/3.jpg", icon: "in" },
-              { name: "Sophia Williams", text: "Studying for SQE has never been this efficient and intuitive.", avatar: "/avatars/4.jpg", icon: "p" },
-              { name: "Jacob Brown", text: "It remembers what I get wrong and helps me revise smarter.", avatar: "/avatars/5.jpg", icon: "in" },
-              { name: "Emily Taylor", text: "The flashcard explanations are on point—no fluff, just clarity.", avatar: "/avatars/6.jpg", icon: "p" },
-              { name: "Ethan Lewis", text: "I literally passed my ACCA prep using this. Thank you!", avatar: "/avatars/7.jpg", icon: "in" },
-              { name: "Maya Anderson", text: "Felt like Base44 for students—beautifully crafted and smart.", avatar: "/avatars/8.jpg", icon: "p" },
-              { name: "Noah Martin", text: "Adaptive learning that’s actually adaptive. I love it.", avatar: "/avatars/9.jpg", icon: "p" },
+              { name: "User 1", text: "Turned my boring PDFs into interactive flashcards in seconds!", avatar: "/avatars/1.jpg", icon: "in" },
+              { name: "User 2", text: "The AI revision coach actually feels like a personal tutor.", avatar: "/avatars/2.jpg", icon: "p" },
+              { name: "User 3", text: "Clean UI, fast performance, and top-tier results. Game changer.", avatar: "/avatars/3.jpg", icon: "in" },
+              { name: "User 4", text: "Studying for SQE has never been this efficient and intuitive.", avatar: "/avatars/4.jpg", icon: "p" },
+              { name: "User 5", text: "It remembers what I get wrong and helps me revise smarter.", avatar: "/avatars/5.jpg", icon: "in" },
+              { name: "User 6", text: "The flashcard explanations are on point—no fluff, just clarity.", avatar: "/avatars/6.jpg", icon: "p" },
+              { name: "User 7", text: "I literally passed my ACCA prep using this. Thank you!", avatar: "/avatars/7.jpg", icon: "in" },
+              { name: "User 8", text: "Felt like Base44 for students—beautifully crafted and smart.", avatar: "/avatars/8.jpg", icon: "p" },
+              { name: "User 9", text: "Adaptive learning that's actually adaptive. I love it.", avatar: "/avatars/9.jpg", icon: "p" },
             ].map((t, i) => (
               <Card
                 key={i}
@@ -365,16 +365,16 @@ export default function Page() {
           {/* Row 2 */}
           <div className="flex animate-scroll-right gap-6 md:gap-10 w-max">
             {[
-              { name: "Leo Johnson", text: "It’s like Notion and ChatGPT had a smarter baby.", avatar: "/avatars/10.jpg", icon: "in" },
-              { name: "Chloe Green", text: "The analytics dashboard helped me identify weak topics instantly.", avatar: "/avatars/11.jpg", icon: "p" },
-              { name: "Daniel Wright", text: "UX is flawless—modern, responsive, and buttery smooth.", avatar: "/avatars/12.jpg", icon: "in" },
-              { name: "Isabella Moore", text: "This is what learning in 2025 should look like.", avatar: "/avatars/13.jpg", icon: "p" },
-              { name: "James Hall", text: "I use it every day for SQE1 revision. Feels like magic.", avatar: "/avatars/14.jpg", icon: "in" },
-              { name: "Ava Thomas", text: "Finally, an AI study app that’s trustworthy and accurate.", avatar: "/avatars/15.jpg", icon: "p" },
-              { name: "Elias Scott", text: "The onboarding flow was smoother than any SaaS I’ve used.", avatar: "/avatars/16.jpg", icon: "in" },
-              { name: "Grace Turner", text: "Everything I need for spaced repetition—no setup, just start.", avatar: "/avatars/17.jpg", icon: "p" },
-              { name: "William Allen", text: "I don’t even think about studying anymore—LetsReWise guides me.", avatar: "/avatars/18.jpg", icon: "in" },
-              { name: "Sofia Hughes", text: "AI-generated quizzes that *actually* make sense. Love it.", avatar: "/avatars/19.jpg", icon: "p" },
+              { name: "User 10", text: "It's like Notion and ChatGPT had a smarter baby.", avatar: "/avatars/10.jpg", icon: "in" },
+              { name: "User 11", text: "The analytics dashboard helped me identify weak topics instantly.", avatar: "/avatars/11.jpg", icon: "p" },
+              { name: "User 12", text: "UX is flawless—modern, responsive, and buttery smooth.", avatar: "/avatars/12.jpg", icon: "in" },
+              { name: "User 13", text: "This is what learning in 2025 should look like.", avatar: "/avatars/13.jpg", icon: "p" },
+              { name: "User 14", text: "I use it every day for SQE1 revision. Feels like magic.", avatar: "/avatars/14.jpg", icon: "in" },
+              { name: "User 15", text: "Finally, an AI study app that's trustworthy and accurate.", avatar: "/avatars/15.jpg", icon: "p" },
+              { name: "User 16", text: "The onboarding flow was smoother than any SaaS I've used.", avatar: "/avatars/16.jpg", icon: "in" },
+              { name: "User 17", text: "Everything I need for spaced repetition—no setup, just start.", avatar: "/avatars/17.jpg", icon: "p" },
+              { name: "User 18", text: "I don't even think about studying anymore—LetsReWise guides me.", avatar: "/avatars/18.jpg", icon: "in" },
+              { name: "User 19", text: "AI-generated quizzes that *actually* make sense. Love it.", avatar: "/avatars/19.jpg", icon: "p" },
             ].map((t, i) => (
               <Card
                 key={i}

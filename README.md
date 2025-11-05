@@ -189,7 +189,7 @@ We keep it lean:
 # 📄 License
 
 Proprietary © LetsReWise. All rights reserved.
-Contact: hello@letsrewise.com
+Contact: [Contact information removed]
 
 ⸻
 
