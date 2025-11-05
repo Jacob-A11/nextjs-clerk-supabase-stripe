@@ -186,13 +186,6 @@ We keep it lean:
 
 ⸻
 
-# 📄 License
-
-Proprietary © LetsReWise. All rights reserved.
-Contact: [Contact information removed]
-
-⸻
-
 # Screenshots
 
 We will add onboarding and dashboard screenshots here once available.
