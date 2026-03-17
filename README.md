@@ -71,20 +71,20 @@ Phase F — Deploy & Ops
 
 # 🧩 Architecture
 
-Next.js (App Router)
-├─ Auth: Clerk (middleware protects non-public routes)
-├─ UI: Tailwind (light, minimal, black accents)
-├─ API routes:
-│  ├─ /api/geodb        ← local JSON + RapidAPI fallback (fuzzy)
-│  ├─ /api/onboarding   ← (next) persist profile (server-only service role)
-│  ├─ /api/upload       ← (next) presigned Storage URL
-│  ├─ /api/process      ← (next) background: text → chunks → embeddings
-│  ├─ /api/quizzes      ← (next) generate/store quizzes
-│  └─ /api/search       ← (next) pgvector semantic search
-└─ Supabase
-   ├─ Postgres + RLS
-   ├─ Storage (docs/)
-   └─ pgvector (document_chunks)
+ Next.js (App Router)
+ ├─ Auth: Clerk (middleware protects non-public routes)
+ ├─ UI: Tailwind (light, minimal, black accents)
+ ├─ API routes:
+ │  ├─ /api/geodb        ← local JSON + RapidAPI fallback (fuzzy)
+ │  ├─ /api/onboarding   ← (next) persist profile (server-only service role)
+ │  ├─ /api/upload       ← (next) presigned Storage URL
+ │  ├─ /api/process      ← (next) background: text → chunks → embeddings
+ │  ├─ /api/quizzes      ← (next) generate/store quizzes
+ │  └─ /api/search       ← (next) pgvector semantic search
+ └─ Supabase
+    ├─ Postgres + RLS
+    ├─ Storage (docs/)
+    └─ pgvector (document_chunks)
    
 
    # 🛠 Tech Stack
