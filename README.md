@@ -70,6 +70,7 @@ Phase F — Deploy & Ops
 ⸻
 
 # 🧩 Architecture
+
 Next.js (App Router)
 ├─ Auth: Clerk (middleware protects non-public routes)
 ├─ UI: Tailwind (light, minimal, black accents)
